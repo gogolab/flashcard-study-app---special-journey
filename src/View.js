@@ -6,10 +6,11 @@ import {
     showFormMsg,
     changedAnswerInputMsg,
     changedQuestionInputMsg,
-    saveCardMsg
+    saveCardMsg,
+    deleteCardMsg
 } from "./Update";
 
-const { pre, div, h1, button, label, input, form } = hh(h);
+const { pre, div, h1, button, label, input, form, p, h6, i } = hh(h);
 
 function cardForm(dispatch, model) {
     if (model.showForm) {
@@ -50,10 +51,28 @@ function buttonSet(dispatch, model) {
     ]);
 }
 
+function renderCard(dispatch, card) {
+    return div({ className: "bg-light-yellow mr2" }, [
+        div(i({ onclick: () => dispatch(deleteCardMsg(card.id)) }, "x")),
+        div({}, [h6("Question:"), p(card.question)]),
+        div({}, [h6("Answer:"), p(card.answer)])
+    ]);
+}
+
+function renderCards(dispatch, cards) {
+    return div(
+        { className: "flex" },
+        [...cards].map(card => {
+            return renderCard(dispatch, card);
+        })
+    );
+}
+
 function view(dispatch, model) {
     return div({ className: "mw8 center" }, [
         h1({ className: "f2 pv2 bb" }, "Flashcard Study"),
         cardForm(dispatch, model),
+        renderCards(dispatch, model.cards),
         pre(JSON.stringify(model, null, 2))
     ]);
 }

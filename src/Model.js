@@ -1,7 +1,7 @@
 const initModel = {
     cards: [],
     editId: null,
-    showForm: true,
+    showForm: false,
     questionInput: "",
     answerInput: ""
 };
