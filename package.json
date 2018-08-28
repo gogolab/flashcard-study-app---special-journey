@@ -20,6 +20,7 @@
         "webpack-dev-server": "^2.9.4"
     },
     "dependencies": {
+        "cuid": "^2.1.4",
         "serve": "^6.4.8"
     }
 }
