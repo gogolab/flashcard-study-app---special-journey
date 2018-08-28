@@ -5,7 +5,8 @@ import { h } from "virtual-dom";
 import {
     showFormMsg,
     changedAnswerInputMsg,
-    changedQuestionInputMsg
+    changedQuestionInputMsg,
+    saveCardMsg
 } from "./Update";
 
 const { pre, div, h1, button, label, input, form } = hh(h);
@@ -19,11 +20,14 @@ function cardForm(dispatch, model) {
             fieldSet("Answer", model.answerInput, e =>
                 dispatch(changedAnswerInputMsg(e.target.value))
             ),
-            buttonSet(dispatch)
+            buttonSet(dispatch, model)
         ]);
     } else {
         return button(
-            { className: "", onclick: () => dispatch(showFormMsg(true)) },
+            {
+                className: "",
+                onclick: () => dispatch(showFormMsg(true, model.editId))
+            },
             "New card"
         );
     }
@@ -36,10 +40,13 @@ function fieldSet(labelText, inputValue, oninput) {
     ]);
 }
 
-function buttonSet(dispatch) {
+function buttonSet(dispatch, model) {
     return div({}, [
-        button({}, "Save"),
-        button({ onclick: () => dispatch(showFormMsg(false)) }, "Cancel")
+        button({ onclick: () => dispatch(saveCardMsg()) }, "Save"),
+        button(
+            { onclick: () => dispatch(showFormMsg(false, model.editId)) },
+            "Cancel"
+        )
     ]);
 }
 

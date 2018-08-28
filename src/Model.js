@@ -1,5 +1,5 @@
 const initModel = {
-    flashcards: [],
+    cards: [],
     editId: null,
     showForm: true,
     questionInput: "",
