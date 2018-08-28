@@ -2,15 +2,23 @@ import * as R from "ramda";
 import hh from "hyperscript-helpers";
 import { h } from "virtual-dom";
 
-import { showFormMsg } from "./Update";
+import {
+    showFormMsg,
+    changedAnswerInputMsg,
+    changedQuestionInputMsg
+} from "./Update";
 
 const { pre, div, h1, button, label, input, form } = hh(h);
 
 function cardForm(dispatch, model) {
     if (model.showForm) {
         return form({}, [
-            fieldSet("Question", model.questionInput, oninput),
-            fieldSet("Answer", model.answerInput, oninput),
+            fieldSet("Question", model.questionInput, e =>
+                dispatch(changedQuestionInputMsg(e.target.value))
+            ),
+            fieldSet("Answer", model.answerInput, e =>
+                dispatch(changedAnswerInputMsg(e.target.value))
+            ),
             buttonSet(dispatch)
         ]);
     } else {
@@ -24,7 +32,7 @@ function cardForm(dispatch, model) {
 function fieldSet(labelText, inputValue, oninput) {
     return div({ className: "" }, [
         label({}, labelText),
-        input({ type: "text", value: inputValue })
+        input({ type: "text", value: inputValue, oninput })
     ]);
 }
 
