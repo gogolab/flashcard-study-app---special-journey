@@ -6,19 +6,14 @@ const MSGS = {
     CHANGED_QUESTION_INPUT: "CHANGED_QUESTION_INPUT",
     CHANGED_ANSWER_INPUT: "CHANGED_ANSWER_INPUT",
     SAVE_CARD: "SAVE_CARD",
-    DELETE_CARD: "DELETE_CARD"
+    DELETE_CARD: "DELETE_CARD",
+    EDIT_CARD: "EDIT_CARD"
 };
 
-export function showFormMsg(showForm, editId) {
-    if (showForm) {
-        editId = editId || cuid();
-    } else {
-        editId = null;
-    }
+export function showFormMsg(showForm) {
     return {
         type: MSGS.SHOW_FORM,
-        showForm,
-        editId
+        showForm
     };
 }
 
@@ -49,14 +44,29 @@ export function deleteCardMsg(id) {
     };
 }
 
+export function editCardMsg(id) {
+    return {
+        type: MSGS.EDIT_CARD,
+        id
+    };
+}
+
 function update(msg, model) {
     console.log("update msg:", msg);
     switch (msg.type) {
         case MSGS.SHOW_FORM: {
+            if (msg.showForm) {
+                return {
+                    ...model,
+                    showForm: msg.showForm
+                };
+            }
             return {
                 ...model,
                 showForm: msg.showForm,
-                editId: msg.editId
+                editId: null,
+                questionInput: "",
+                answerInput: ""
             };
         }
         case MSGS.CHANGED_QUESTION_INPUT: {
@@ -75,7 +85,7 @@ function update(msg, model) {
             const card = {
                 question: model.questionInput,
                 answer: model.answerInput,
-                id: model.editId
+                id: model.editId || cuid()
             };
 
             const cards = [...model.cards, card];
@@ -94,6 +104,17 @@ function update(msg, model) {
             return {
                 ...model,
                 cards
+            };
+        }
+        case MSGS.EDIT_CARD: {
+            const card = model.cards.find(card => card.id === msg.id);
+
+            return {
+                ...model,
+                editId: card.id,
+                showForm: true,
+                questionInput: card.question,
+                answerInput: card.answer
             };
         }
         default:

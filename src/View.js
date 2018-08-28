@@ -7,7 +7,8 @@ import {
     changedAnswerInputMsg,
     changedQuestionInputMsg,
     saveCardMsg,
-    deleteCardMsg
+    deleteCardMsg,
+    editCardMsg
 } from "./Update";
 
 const { pre, div, h1, button, label, input, form, p, h6, i } = hh(h);
@@ -27,7 +28,7 @@ function cardForm(dispatch, model) {
         return button(
             {
                 className: "",
-                onclick: () => dispatch(showFormMsg(true, model.editId))
+                onclick: () => dispatch(showFormMsg(true))
             },
             "New card"
         );
@@ -44,17 +45,22 @@ function fieldSet(labelText, inputValue, oninput) {
 function buttonSet(dispatch, model) {
     return div({}, [
         button({ onclick: () => dispatch(saveCardMsg()) }, "Save"),
-        button(
-            { onclick: () => dispatch(showFormMsg(false, model.editId)) },
-            "Cancel"
-        )
+        button({ onclick: () => dispatch(showFormMsg(false)) }, "Cancel")
     ]);
 }
 
 function renderCard(dispatch, card) {
     return div({ className: "bg-light-yellow mr2" }, [
         div(i({ onclick: () => dispatch(deleteCardMsg(card.id)) }, "x")),
-        div({}, [h6("Question:"), p(card.question)]),
+        div({}, [
+            h6("Question:"),
+            p(
+                {
+                    onclick: () => dispatch(editCardMsg(card.id))
+                },
+                card.question
+            )
+        ]),
         div({}, [h6("Answer:"), p(card.answer)])
     ]);
 }
