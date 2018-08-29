@@ -9,7 +9,8 @@ import {
     saveCardMsg,
     deleteCardMsg,
     editCardMsg,
-    showAnswerMsg
+    showAnswerMsg,
+    evaluateCardMsg
 } from "./Update";
 
 const { pre, div, h1, button, label, input, form, p, h6, i } = hh(h);
@@ -70,11 +71,15 @@ function renderCard(dispatch, model, card) {
         { onclick: () => dispatch(showAnswerMsg(card.id)) },
         "Show answer"
     );
-    if (model.showAnswer === card.id) {
+    if (model.showAnswerId === card.id) {
         answer = div({}, [
             h6("Answer:"),
             p(card.answer),
-            div({}, [button("Bad"), button("Good"), button("Great")])
+            div({}, [
+                button({ onclick: () => dispatch(evaluateCardMsg(0)) }, "Bad"),
+                button({ onclick: () => dispatch(evaluateCardMsg(1)) }, "Good"),
+                button({ onclick: () => dispatch(evaluateCardMsg(2)) }, "Great")
+            ])
         ]);
     }
 

@@ -8,8 +8,16 @@ const MSGS = {
     SAVE_CARD: "SAVE_CARD",
     DELETE_CARD: "DELETE_CARD",
     EDIT_CARD: "EDIT_CARD",
-    SHOW_ANSWER: "SHOW_ANSWER"
+    SHOW_ANSWER: "SHOW_ANSWER",
+    EVALUATE_CARD: "EVALUATE_CARD"
 };
+
+export function evaluateCardMsg(value) {
+    return {
+        type: MSGS.EVALUATE_CARD,
+        weight: value
+    };
+}
 
 export function showAnswerMsg(id) {
     return {
@@ -85,7 +93,8 @@ function add(model) {
     const card = {
         question: model.questionInput,
         answer: model.answerInput,
-        id: model.editId || cuid()
+        id: model.editId || cuid(),
+        weight: 0
     };
 
     const cards = [...model.cards, card];
@@ -156,7 +165,25 @@ function update(msg, model) {
         case MSGS.SHOW_ANSWER: {
             return {
                 ...model,
-                showAnswer: msg.id
+                showAnswerId: msg.id
+            };
+        }
+        case MSGS.EVALUATE_CARD: {
+            const cards = [...model.cards].map(card => {
+                if (card.id === model.showAnswerId) {
+                    const weight = msg.weight ? card.weight + msg.weight : 0;
+                    return {
+                        ...card,
+                        weight
+                    };
+                } else {
+                    return card;
+                }
+            });
+            return {
+                ...model,
+                cards,
+                showAnswerId: null
             };
         }
         default:

@@ -4,7 +4,7 @@ const initModel = {
     showForm: false,
     questionInput: "",
     answerInput: "",
-    showAnswer: null
+    showAnswerId: null
 };
 
 export default initModel;
