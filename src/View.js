@@ -49,7 +49,21 @@ function buttonSet(dispatch, model) {
     ]);
 }
 
-function renderCard(dispatch, card) {
+function renderCard(dispatch, model, card) {
+    if (model.editId === card.id) {
+        return div({ className: "bg-light-yellow mr2" }, [
+            div(i({ onclick: () => dispatch(deleteCardMsg(card.id)) }, "x")),
+            form({}, [
+                fieldSet("Question", model.questionInput, e =>
+                    dispatch(changedQuestionInputMsg(e.target.value))
+                ),
+                fieldSet("Answer", model.answerInput, e =>
+                    dispatch(changedAnswerInputMsg(e.target.value))
+                ),
+                buttonSet(dispatch, model)
+            ])
+        ]);
+    }
     return div({ className: "bg-light-yellow mr2" }, [
         div(i({ onclick: () => dispatch(deleteCardMsg(card.id)) }, "x")),
         div({}, [
@@ -65,11 +79,11 @@ function renderCard(dispatch, card) {
     ]);
 }
 
-function renderCards(dispatch, cards) {
+function renderCards(dispatch, model) {
     return div(
         { className: "flex" },
-        [...cards].map(card => {
-            return renderCard(dispatch, card);
+        [...model.cards].map(card => {
+            return renderCard(dispatch, model, card);
         })
     );
 }
@@ -78,7 +92,7 @@ function view(dispatch, model) {
     return div({ className: "mw8 center" }, [
         h1({ className: "f2 pv2 bb" }, "Flashcard Study"),
         cardForm(dispatch, model),
-        renderCards(dispatch, model.cards),
+        renderCards(dispatch, model),
         pre(JSON.stringify(model, null, 2))
     ]);
 }

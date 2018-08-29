@@ -51,6 +51,47 @@ export function editCardMsg(id) {
     };
 }
 
+function edit(model) {
+    const cards = [...model.cards].map(card => {
+        if (card.id === model.editId) {
+            return {
+                ...card,
+                question: model.questionInput,
+                answer: model.answerInput
+            };
+        } else {
+            return card;
+        }
+    });
+
+    return {
+        ...model,
+        cards,
+        questionInput: "",
+        answerInput: "",
+        editId: null
+    };
+}
+
+function add(model) {
+    const card = {
+        question: model.questionInput,
+        answer: model.answerInput,
+        id: model.editId || cuid()
+    };
+
+    const cards = [...model.cards, card];
+
+    return {
+        ...model,
+        cards,
+        questionInput: "",
+        answerInput: "",
+        editId: null,
+        showForm: false
+    };
+}
+
 function update(msg, model) {
     console.log("update msg:", msg);
     switch (msg.type) {
@@ -82,22 +123,9 @@ function update(msg, model) {
             };
         }
         case MSGS.SAVE_CARD: {
-            const card = {
-                question: model.questionInput,
-                answer: model.answerInput,
-                id: model.editId || cuid()
-            };
-
-            const cards = [...model.cards, card];
-
-            return {
-                ...model,
-                cards,
-                questionInput: "",
-                answerInput: "",
-                editId: null,
-                showForm: false
-            };
+            console.log("save model:", model);
+            const updatedModel = model.editId ? edit(model) : add(model);
+            return updatedModel;
         }
         case MSGS.DELETE_CARD: {
             const cards = model.cards.filter(card => card.id !== msg.id);
@@ -112,7 +140,7 @@ function update(msg, model) {
             return {
                 ...model,
                 editId: card.id,
-                showForm: true,
+                showForm: false,
                 questionInput: card.question,
                 answerInput: card.answer
             };
