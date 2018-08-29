@@ -7,8 +7,16 @@ const MSGS = {
     CHANGED_ANSWER_INPUT: "CHANGED_ANSWER_INPUT",
     SAVE_CARD: "SAVE_CARD",
     DELETE_CARD: "DELETE_CARD",
-    EDIT_CARD: "EDIT_CARD"
+    EDIT_CARD: "EDIT_CARD",
+    SHOW_ANSWER: "SHOW_ANSWER"
 };
+
+export function showAnswerMsg(id) {
+    return {
+        type: MSGS.SHOW_ANSWER,
+        id
+    };
+}
 
 export function showFormMsg(showForm) {
     return {
@@ -143,6 +151,12 @@ function update(msg, model) {
                 showForm: false,
                 questionInput: card.question,
                 answerInput: card.answer
+            };
+        }
+        case MSGS.SHOW_ANSWER: {
+            return {
+                ...model,
+                showAnswer: msg.id
             };
         }
         default:

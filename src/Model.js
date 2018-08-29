@@ -3,7 +3,8 @@ const initModel = {
     editId: null,
     showForm: false,
     questionInput: "",
-    answerInput: ""
+    answerInput: "",
+    showAnswer: null
 };
 
 export default initModel;

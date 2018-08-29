@@ -8,7 +8,8 @@ import {
     changedQuestionInputMsg,
     saveCardMsg,
     deleteCardMsg,
-    editCardMsg
+    editCardMsg,
+    showAnswerMsg
 } from "./Update";
 
 const { pre, div, h1, button, label, input, form, p, h6, i } = hh(h);
@@ -64,6 +65,19 @@ function renderCard(dispatch, model, card) {
             ])
         ]);
     }
+
+    let answer = p(
+        { onclick: () => dispatch(showAnswerMsg(card.id)) },
+        "Show answer"
+    );
+    if (model.showAnswer === card.id) {
+        answer = div({}, [
+            h6("Answer:"),
+            p(card.answer),
+            div({}, [button("Bad"), button("Good"), button("Great")])
+        ]);
+    }
+
     return div({ className: "bg-light-yellow mr2" }, [
         div(i({ onclick: () => dispatch(deleteCardMsg(card.id)) }, "x")),
         div({}, [
@@ -75,7 +89,7 @@ function renderCard(dispatch, model, card) {
                 card.question
             )
         ]),
-        div({}, [h6("Answer:"), p(card.answer)])
+        answer
     ]);
 }
 
