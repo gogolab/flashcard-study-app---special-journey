@@ -98,10 +98,15 @@ function renderCard(dispatch, model, card) {
     ]);
 }
 
+const sortByWeight = R.sortWith([R.ascend(R.prop("weight"))]);
+
 function renderCards(dispatch, model) {
+    console.log("sorted cards 1:", cards);
+    const cards = sortByWeight(model.cards);
+    console.log("sorted cards 2:", cards);
     return div(
         { className: "flex" },
-        [...model.cards].map(card => {
+        cards.map(card => {
             return renderCard(dispatch, model, card);
         })
     );
