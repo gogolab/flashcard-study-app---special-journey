@@ -51,36 +51,54 @@ function fieldSet(labelText, inputValue, oninput) {
 
 function buttonSet(dispatch, model) {
     return div({ className: "ma3" }, [
-        button({ onclick: () => dispatch(saveCardMsg()) }, "Save"),
-        button({ onclick: () => dispatch(showFormMsg(false)) }, "Cancel")
+        button(
+            {
+                className:
+                    "f6 link dim br3 ph3 pv2 mb2 mr2 dib white bg-green bn",
+                onclick: () => dispatch(saveCardMsg())
+            },
+            "Save"
+        ),
+        button(
+            {
+                className:
+                    "f6 link dim br3 ph3 pv2 mb2 mr2 dib white bg-red bn",
+                onclick: () => dispatch(showFormMsg(false))
+            },
+            "Cancel"
+        )
     ]);
 }
 
 function renderCard(dispatch, model, card) {
     if (model.editId === card.id) {
-        return div({ className: "bg-light-yellow mr2 pa3 flex flex-column" }, [
-            div(
-                { className: "self-end" },
-                i({
-                    className: "fa fa-trash",
-                    onclick: () => dispatch(deleteCardMsg(card.id))
-                })
-            ),
-            form({}, [
-                fieldSet("Question", model.questionInput, e =>
-                    dispatch(changedQuestionInputMsg(e.target.value))
+        return div(
+            { className: "bg-light-yellow mr2 pa3 flex flex-column br2" },
+            [
+                div(
+                    { className: "self-end" },
+                    i({
+                        className: "fa fa-trash",
+                        onclick: () => dispatch(deleteCardMsg(card.id))
+                    })
                 ),
-                fieldSet("Answer", model.answerInput, e =>
-                    dispatch(changedAnswerInputMsg(e.target.value))
-                ),
-                buttonSet(dispatch, model)
-            ])
-        ]);
+                form({}, [
+                    fieldSet("Question", model.questionInput, e =>
+                        dispatch(changedQuestionInputMsg(e.target.value))
+                    ),
+                    fieldSet("Answer", model.answerInput, e =>
+                        dispatch(changedAnswerInputMsg(e.target.value))
+                    ),
+                    buttonSet(dispatch, model)
+                ])
+            ]
+        );
     }
 
     let answer = button(
         {
-            className: "f6 link dim br-pill ba ph3 pv2 mb2 dib dark-green",
+            className:
+                "f6 link pointer br-pill ba ph3 pv2 mb2 dib bg-light-green near-black",
             onclick: () => dispatch(showAnswerMsg(card.id))
         },
         "Show answer"
@@ -90,7 +108,7 @@ function renderCard(dispatch, model, card) {
             h6({ className: "ma0" }, "Answer:"),
             p(
                 {
-                    className: "mt0 pointer",
+                    className: "mt0 pointer dim",
                     onclick: () => dispatch(editCardMsg(card.id))
                 },
                 card.answer
@@ -99,7 +117,7 @@ function renderCard(dispatch, model, card) {
                 button(
                     {
                         className:
-                            "f6 link dim br3 ba ph3 pv2 mb2 dib white bg-dark-red",
+                            "f6 link pointer br3 ba ph3 pv2 mb2 dib white bg-dark-red",
                         onclick: () => dispatch(evaluateCardMsg(0))
                     },
                     "Bad"
@@ -107,7 +125,7 @@ function renderCard(dispatch, model, card) {
                 button(
                     {
                         className:
-                            "f6 link dim br3 ba ph3 pv2 mb2 dib white bg-dark-blue",
+                            "f6 link pointer br3 ba ph3 pv2 mb2 dib white bg-dark-blue",
                         onclick: () => dispatch(evaluateCardMsg(1))
                     },
                     "Good"
@@ -115,7 +133,7 @@ function renderCard(dispatch, model, card) {
                 button(
                     {
                         className:
-                            "f6 link dim br3 ba ph3 pv2 mb2 dib white bg-dark-green",
+                            "f6 link pointer br3 ba ph3 pv2 mb2 dib white bg-dark-green",
                         onclick: () => dispatch(evaluateCardMsg(2))
                     },
                     "Great"
@@ -124,26 +142,32 @@ function renderCard(dispatch, model, card) {
         ]);
     }
 
-    return div({ className: "w-30 bg-light-yellow mr2 flex flex-column pa2" }, [
-        div(
-            { className: "self-end" },
-            i({
-                className: "fa fa-trash pointer",
-                onclick: () => dispatch(deleteCardMsg(card.id))
-            })
-        ),
-        div({}, [
-            h6({ className: "ma0" }, "Question:"),
-            p(
-                {
-                    className: "mt1 pointer",
-                    onclick: () => dispatch(editCardMsg(card.id))
-                },
-                card.question
-            )
-        ]),
-        answer
-    ]);
+    return div(
+        {
+            className:
+                "w-100 w-80-m w-40-l bg-light-yellow mr2 mb2 flex flex-column pa2 br2"
+        },
+        [
+            div(
+                { className: "self-end" },
+                i({
+                    className: "fa fa-trash pointer",
+                    onclick: () => dispatch(deleteCardMsg(card.id))
+                })
+            ),
+            div({}, [
+                h6({ className: "ma0" }, "Question:"),
+                p(
+                    {
+                        className: "mt1 pointer dim",
+                        onclick: () => dispatch(editCardMsg(card.id))
+                    },
+                    card.question
+                )
+            ]),
+            answer
+        ]
+    );
 }
 
 const sortByWeight = R.sortWith([R.ascend(R.prop("weight"))]);
@@ -152,7 +176,7 @@ function renderCards(dispatch, model) {
     const cards = sortByWeight(model.cards);
     console.log("sorted cards:", cards);
     return div(
-        { className: "flex" },
+        { className: "flex flex-wrap" },
         cards.map(card => {
             return renderCard(dispatch, model, card);
         })
