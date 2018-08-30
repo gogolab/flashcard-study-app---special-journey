@@ -3,8 +3,8 @@ import cuid from "cuid";
 
 const MSGS = {
     SHOW_FORM: "SHOW_FORM",
-    CHANGED_QUESTION_INPUT: "CHANGED_QUESTION_INPUT",
-    CHANGED_ANSWER_INPUT: "CHANGED_ANSWER_INPUT",
+    CHANGE_QUESTION_INPUT: "CHANGE_QUESTION_INPUT",
+    CHANGE_ANSWER_INPUT: "CHANGE_ANSWER_INPUT",
     SAVE_CARD: "SAVE_CARD",
     DELETE_CARD: "DELETE_CARD",
     EDIT_CARD: "EDIT_CARD",
@@ -35,14 +35,14 @@ export function showFormMsg(showForm) {
 
 export function changedQuestionInputMsg(value) {
     return {
-        type: MSGS.CHANGED_QUESTION_INPUT,
+        type: MSGS.CHANGE_QUESTION_INPUT,
         questionInput: value
     };
 }
 
 export function changedAnswerInputMsg(value) {
     return {
-        type: MSGS.CHANGED_ANSWER_INPUT,
+        type: MSGS.CHANGE_ANSWER_INPUT,
         answerInput: value
     };
 }
@@ -109,83 +109,103 @@ function add(model) {
     };
 }
 
+function showForm(model, msg) {
+    if (msg.showForm) {
+        return {
+            ...model,
+            showForm: msg.showForm
+        };
+    }
+    return {
+        ...model,
+        showForm: msg.showForm,
+        editId: null,
+        questionInput: "",
+        answerInput: ""
+    };
+}
+
+function changeQuestionInput(model, msg) {
+    return {
+        ...model,
+        questionInput: msg.questionInput
+    };
+}
+
+function changeAnswerInput(model, msg) {
+    return {
+        ...model,
+        answerInput: msg.answerInput
+    };
+}
+
+function deleteCard(model, msg) {
+    const cards = model.cards.filter(card => card.id !== msg.id);
+    return {
+        ...model,
+        cards
+    };
+}
+
+function editCard(model, msg) {
+    const card = model.cards.find(card => card.id === msg.id);
+
+    return {
+        ...model,
+        editId: card.id,
+        showForm: false,
+        questionInput: card.question,
+        answerInput: card.answer
+    };
+}
+
+function showAnswer(model, msg) {
+    return {
+        ...model,
+        showAnswerId: msg.id
+    };
+}
+
+function evaluateCard(model, msg) {
+    const cards = [...model.cards].map(card => {
+        if (card.id === model.showAnswerId) {
+            const weight = msg.weight ? card.weight + msg.weight : 0;
+            return {
+                ...card,
+                weight
+            };
+        } else {
+            return card;
+        }
+    });
+    return {
+        ...model,
+        cards,
+        showAnswerId: null
+    };
+}
+
 function update(msg, model) {
     console.log("update msg:", msg);
     switch (msg.type) {
-        case MSGS.SHOW_FORM: {
-            if (msg.showForm) {
-                return {
-                    ...model,
-                    showForm: msg.showForm
-                };
-            }
-            return {
-                ...model,
-                showForm: msg.showForm,
-                editId: null,
-                questionInput: "",
-                answerInput: ""
-            };
-        }
-        case MSGS.CHANGED_QUESTION_INPUT: {
-            return {
-                ...model,
-                questionInput: msg.questionInput
-            };
-        }
-        case MSGS.CHANGED_ANSWER_INPUT: {
-            return {
-                ...model,
-                answerInput: msg.answerInput
-            };
-        }
+        case MSGS.SHOW_FORM:
+            return showForm(model, msg);
+        case MSGS.CHANGE_QUESTION_INPUT:
+            return changeQuestionInput(model, msg);
+        case MSGS.CHANGE_ANSWER_INPUT:
+            return changeAnswerInput(model, msg);
         case MSGS.SAVE_CARD: {
-            console.log("save model:", model);
             const updatedModel = model.editId ? edit(model) : add(model);
             return updatedModel;
         }
-        case MSGS.DELETE_CARD: {
-            const cards = model.cards.filter(card => card.id !== msg.id);
-            return {
-                ...model,
-                cards
-            };
-        }
-        case MSGS.EDIT_CARD: {
-            const card = model.cards.find(card => card.id === msg.id);
-
-            return {
-                ...model,
-                editId: card.id,
-                showForm: false,
-                questionInput: card.question,
-                answerInput: card.answer
-            };
-        }
-        case MSGS.SHOW_ANSWER: {
-            return {
-                ...model,
-                showAnswerId: msg.id
-            };
-        }
-        case MSGS.EVALUATE_CARD: {
-            const cards = [...model.cards].map(card => {
-                if (card.id === model.showAnswerId) {
-                    const weight = msg.weight ? card.weight + msg.weight : 0;
-                    return {
-                        ...card,
-                        weight
-                    };
-                } else {
-                    return card;
-                }
-            });
-            return {
-                ...model,
-                cards,
-                showAnswerId: null
-            };
-        }
+        case MSGS.DELETE_CARD:
+            return deleteCard(model, msg);
+        case MSGS.EDIT_CARD:
+            return editCard(model, msg);
+        case MSGS.SHOW_ANSWER:
+            return showAnswer(model, msg);
+        case MSGS.EVALUATE_CARD:
+            return evaluateCard(model, msg);
         default:
             console.log("bad message");
             return model;
