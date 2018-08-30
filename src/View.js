@@ -71,40 +71,10 @@ function buttonSet(dispatch, model) {
 }
 
 function renderCard(dispatch, model, card) {
-    if (model.editId === card.id) {
-        return div(
-            { className: "bg-light-yellow mr2 pa3 flex flex-column br2" },
-            [
-                div(
-                    { className: "self-end" },
-                    i({
-                        className: "fa fa-trash",
-                        onclick: () => dispatch(deleteCardMsg(card.id))
-                    })
-                ),
-                form({}, [
-                    fieldSet("Question", model.questionInput, e =>
-                        dispatch(changedQuestionInputMsg(e.target.value))
-                    ),
-                    fieldSet("Answer", model.answerInput, e =>
-                        dispatch(changedAnswerInputMsg(e.target.value))
-                    ),
-                    buttonSet(dispatch, model)
-                ])
-            ]
-        );
-    }
+    let cardBodyAnswer;
 
-    let answer = button(
-        {
-            className:
-                "f6 link pointer br-pill ba ph3 pv2 mb2 dib bg-light-green near-black",
-            onclick: () => dispatch(showAnswerMsg(card.id))
-        },
-        "Show answer"
-    );
     if (model.showAnswerId === card.id) {
-        answer = div({}, [
+        cardBodyAnswer = div({ className: "flex flex-column" }, [
             h6({ className: "ma0" }, "Answer:"),
             p(
                 {
@@ -113,11 +83,11 @@ function renderCard(dispatch, model, card) {
                 },
                 card.answer
             ),
-            div({}, [
+            div({ className: "self-center" }, [
                 button(
                     {
                         className:
-                            "f6 link pointer br3 ba ph3 pv2 mb2 dib white bg-dark-red",
+                            "f6 link pointer br3 ba ph3 pv2 mb2 mh1 dib white bg-dark-red",
                         onclick: () => dispatch(evaluateCardMsg(0))
                     },
                     "Bad"
@@ -125,7 +95,7 @@ function renderCard(dispatch, model, card) {
                 button(
                     {
                         className:
-                            "f6 link pointer br3 ba ph3 pv2 mb2 dib white bg-dark-blue",
+                            "f6 link pointer br3 ba ph3 pv2 mh1 mb2 dib white bg-dark-blue",
                         onclick: () => dispatch(evaluateCardMsg(1))
                     },
                     "Good"
@@ -133,28 +103,38 @@ function renderCard(dispatch, model, card) {
                 button(
                     {
                         className:
-                            "f6 link pointer br3 ba ph3 pv2 mb2 dib white bg-dark-green",
+                            "f6 link pointer br3 ba ph3 pv2 mh1 mb2 dib white bg-dark-green",
                         onclick: () => dispatch(evaluateCardMsg(2))
                     },
                     "Great"
                 )
             ])
         ]);
+    } else {
+        cardBodyAnswer = button(
+            {
+                className:
+                    "f6 link pointer br-pill ba ph3 pv2 mb2 dib bg-light-green near-black self-center",
+                onclick: () => dispatch(showAnswerMsg(card.id))
+            },
+            "Show answer"
+        );
     }
 
-    return div(
-        {
-            className:
-                "w-100 w-80-m w-40-l bg-light-yellow mr2 mb2 flex flex-column pa2 br2"
-        },
-        [
-            div(
-                { className: "self-end" },
-                i({
-                    className: "fa fa-trash pointer",
-                    onclick: () => dispatch(deleteCardMsg(card.id))
-                })
+    let cardBody;
+
+    if (model.editId === card.id) {
+        cardBody = form({}, [
+            fieldSet("Question", model.questionInput, e =>
+                dispatch(changedQuestionInputMsg(e.target.value))
             ),
+            fieldSet("Answer", model.answerInput, e =>
+                dispatch(changedAnswerInputMsg(e.target.value))
+            ),
+            buttonSet(dispatch, model)
+        ]);
+    } else {
+        cardBody = div({ className: "flex flex-column" }, [
             div({}, [
                 h6({ className: "ma0" }, "Question:"),
                 p(
@@ -165,8 +145,24 @@ function renderCard(dispatch, model, card) {
                     card.question
                 )
             ]),
-            answer
-        ]
+            cardBodyAnswer
+        ]);
+    }
+
+    const cardHeader = div(
+        { className: "self-end" },
+        i({
+            className: "fa fa-trash pointer grow",
+            onclick: () => dispatch(deleteCardMsg(card.id))
+        })
+    );
+
+    return div(
+        {
+            className:
+                "w-100 w-80-m w-40-l bg-light-yellow mr2 mb2 flex flex-column pa2 br2 shadow-3"
+        },
+        [cardHeader, cardBody]
     );
 }
 
