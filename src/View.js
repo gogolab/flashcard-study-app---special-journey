@@ -13,11 +13,13 @@ import {
     evaluateCardMsg
 } from "./Update";
 
-const { pre, div, h1, button, label, input, form, p, h6, i } = hh(h);
+const { pre, div, h1, button, label, input, form, p, h6, i, textarea } = hh(h);
 
 function cardForm(dispatch, model) {
+    let formBody;
+
     if (model.showForm) {
-        return form({}, [
+        formBody = form({}, [
             fieldSet("Question", model.questionInput, e =>
                 dispatch(changedQuestionInputMsg(e.target.value))
             ),
@@ -27,7 +29,7 @@ function cardForm(dispatch, model) {
             buttonSet(dispatch, model)
         ]);
     } else {
-        return button(
+        formBody = button(
             {
                 className: "",
                 onclick: () => dispatch(showFormMsg(true))
@@ -35,17 +37,20 @@ function cardForm(dispatch, model) {
             "New card"
         );
     }
+
+    return div({ className: "mb3 mw6-m" }, formBody);
 }
 
 function fieldSet(labelText, inputValue, oninput) {
-    return div({ className: "" }, [
+    return div({ className: "flex flex-column mb3" }, [
         label({}, labelText),
-        input({ type: "text", value: inputValue, oninput })
+        // input({ type: "text", value: inputValue, oninput })
+        textarea({ value: inputValue, onchange: oninput })
     ]);
 }
 
 function buttonSet(dispatch, model) {
-    return div({}, [
+    return div({ className: "ma3" }, [
         button({ onclick: () => dispatch(saveCardMsg()) }, "Save"),
         button({ onclick: () => dispatch(showFormMsg(false)) }, "Cancel")
     ]);
@@ -53,8 +58,14 @@ function buttonSet(dispatch, model) {
 
 function renderCard(dispatch, model, card) {
     if (model.editId === card.id) {
-        return div({ className: "bg-light-yellow mr2" }, [
-            div(i({ onclick: () => dispatch(deleteCardMsg(card.id)) }, "x")),
+        return div({ className: "bg-light-yellow mr2 pa3 flex flex-column" }, [
+            div(
+                { className: "self-end" },
+                i({
+                    className: "fa fa-trash",
+                    onclick: () => dispatch(deleteCardMsg(card.id))
+                })
+            ),
             form({}, [
                 fieldSet("Question", model.questionInput, e =>
                     dispatch(changedQuestionInputMsg(e.target.value))
@@ -67,28 +78,65 @@ function renderCard(dispatch, model, card) {
         ]);
     }
 
-    let answer = p(
-        { onclick: () => dispatch(showAnswerMsg(card.id)) },
+    let answer = button(
+        {
+            className: "f6 link dim br-pill ba ph3 pv2 mb2 dib dark-green",
+            onclick: () => dispatch(showAnswerMsg(card.id))
+        },
         "Show answer"
     );
     if (model.showAnswerId === card.id) {
         answer = div({}, [
-            h6("Answer:"),
-            p(card.answer),
+            h6({ className: "ma0" }, "Answer:"),
+            p(
+                {
+                    className: "mt0 pointer",
+                    onclick: () => dispatch(editCardMsg(card.id))
+                },
+                card.answer
+            ),
             div({}, [
-                button({ onclick: () => dispatch(evaluateCardMsg(0)) }, "Bad"),
-                button({ onclick: () => dispatch(evaluateCardMsg(1)) }, "Good"),
-                button({ onclick: () => dispatch(evaluateCardMsg(2)) }, "Great")
+                button(
+                    {
+                        className:
+                            "f6 link dim br3 ba ph3 pv2 mb2 dib white bg-dark-red",
+                        onclick: () => dispatch(evaluateCardMsg(0))
+                    },
+                    "Bad"
+                ),
+                button(
+                    {
+                        className:
+                            "f6 link dim br3 ba ph3 pv2 mb2 dib white bg-dark-blue",
+                        onclick: () => dispatch(evaluateCardMsg(1))
+                    },
+                    "Good"
+                ),
+                button(
+                    {
+                        className:
+                            "f6 link dim br3 ba ph3 pv2 mb2 dib white bg-dark-green",
+                        onclick: () => dispatch(evaluateCardMsg(2))
+                    },
+                    "Great"
+                )
             ])
         ]);
     }
 
-    return div({ className: "bg-light-yellow mr2" }, [
-        div(i({ onclick: () => dispatch(deleteCardMsg(card.id)) }, "x")),
+    return div({ className: "w-30 bg-light-yellow mr2 flex flex-column pa2" }, [
+        div(
+            { className: "self-end" },
+            i({
+                className: "fa fa-trash pointer",
+                onclick: () => dispatch(deleteCardMsg(card.id))
+            })
+        ),
         div({}, [
-            h6("Question:"),
+            h6({ className: "ma0" }, "Question:"),
             p(
                 {
+                    className: "mt1 pointer",
                     onclick: () => dispatch(editCardMsg(card.id))
                 },
                 card.question
@@ -101,9 +149,8 @@ function renderCard(dispatch, model, card) {
 const sortByWeight = R.sortWith([R.ascend(R.prop("weight"))]);
 
 function renderCards(dispatch, model) {
-    console.log("sorted cards 1:", cards);
     const cards = sortByWeight(model.cards);
-    console.log("sorted cards 2:", cards);
+    console.log("sorted cards:", cards);
     return div(
         { className: "flex" },
         cards.map(card => {
