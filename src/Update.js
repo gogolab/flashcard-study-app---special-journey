@@ -186,7 +186,7 @@ function evaluateCard(model, msg) {
 }
 
 function update(msg, model) {
-    console.log("update msg:", msg);
+    // console.log("update msg:", msg);
     switch (msg.type) {
         case MSGS.SHOW_FORM:
             return showForm(model, msg);

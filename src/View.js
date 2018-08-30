@@ -44,7 +44,6 @@ function cardForm(dispatch, model) {
 function fieldSet(labelText, inputValue, oninput) {
     return div({ className: "flex flex-column mb3" }, [
         label({}, labelText),
-        // input({ type: "text", value: inputValue, oninput })
         textarea({ value: inputValue, onchange: oninput })
     ]);
 }
@@ -170,7 +169,6 @@ const sortByWeight = R.sortWith([R.ascend(R.prop("weight"))]);
 
 function renderCards(dispatch, model) {
     const cards = sortByWeight(model.cards);
-    console.log("sorted cards:", cards);
     return div(
         { className: "flex flex-wrap" },
         cards.map(card => {
@@ -183,8 +181,8 @@ function view(dispatch, model) {
     return div({ className: "mw8 center" }, [
         h1({ className: "f2 pv2 bb" }, "Flashcard Study"),
         cardForm(dispatch, model),
-        renderCards(dispatch, model),
-        pre(JSON.stringify(model, null, 2))
+        renderCards(dispatch, model)
+        // pre(JSON.stringify(model, null, 2))
     ]);
 }
 
